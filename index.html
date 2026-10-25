@@ -3,345 +3,168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Training Manifest — SAP S/4HANA Retail</title>
+<title>Learning dashboard — SAP S/4HANA Retail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+
   :root{
-    --paper:#ECEEF2;
-    --panel:#FFFFFF;
-    --ink:#1A2333;
-    --ink-soft:#5B667A;
-    --steel:#3F6B7A;
-    --steel-soft:#DCE6E8;
-    --amber:#E2A63B;
-    --stamp-red:#B4432F;
-    --actual:#2F7D5E;
-    --weekend: rgba(26,35,51,0.07);
-    --line: rgba(26,35,51,0.14);
+    --paper:#f3f6f8; --panel:#fff; --ink:#182d3b; --ink-soft:#596c7a;
+    --steel:#176b70; --steel-soft:#e5f2f1; --amber:#b77c1a;
+    --stamp-red:#a54230; --actual:#25816a; --line:#dce5e9;
+    --weekend:rgba(24,45,59,.06);
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    -webkit-font-smoothing:antialiased;
-    padding:22px 12px 44px;
-  }
-  .wrap{max-width:640px;margin:0 auto;}
-  .manifest{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:6px;
-    overflow:hidden;
-    box-shadow:0 1px 3px rgba(26,35,51,0.08);
-  }
-  .head{padding:20px 18px 16px;border-bottom:1.5px dashed var(--line);}
-  .eyebrow{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:.12em;
-    color:var(--ink-soft);
-    text-transform:uppercase;
-  }
-  .hero{display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap;}
-  .hero__label{
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    color:var(--ink-soft);
-    text-transform:uppercase;
-    letter-spacing:.08em;
-  }
-  .hero__date{
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:700;
-    font-size:38px;
-    line-height:1;
-    color:var(--ink);
-  }
-  .stamp{
-    margin-left:auto;
-    border:2px solid var(--stamp-red);
-    color:var(--stamp-red);
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    padding:4px 8px;
-    border-radius:3px;
-    transform:rotate(-4deg);
-    white-space:nowrap;
-  }
-  .meta-line{
-    margin-top:9px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    color:var(--ink-soft);
-  }
-  .gantt-legend{display:flex;gap:14px;margin-bottom:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink-soft);align-items:center;flex-wrap:wrap;}
-  .pc-swatch{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:middle;border-radius:2px;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  button,input{font:inherit;}
+  button,summary,a,input{touch-action:manipulation;}
+  :focus-visible{outline:3px solid #29909a;outline-offset:4px;}
+  a{color:var(--steel);}
+  .wrap{width:min(1440px,100%);margin:0 auto;padding:0 40px 32px;}
+  .app-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:86px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:16px;}
+  .brand-mark{display:grid;place-items:center;width:38px;height:38px;background:var(--steel);color:#fff;border-radius:10px;font-size:13px;letter-spacing:-.04em;}
+  .app-bar__tag{font-size:12px;color:var(--ink-soft);}
+  .manifest{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start;}
+  .head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:28px;padding-top:34px;}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.13em;color:var(--steel);text-transform:uppercase;}
+  h1{font-size:clamp(26px,3vw,36px);letter-spacing:-.045em;line-height:1.2;margin:8px 0 10px;font-weight:600;}
+  .meta-line{font-size:13px;color:var(--ink-soft);}
+  .hero{flex:0 0 auto;padding-left:24px;border-left:1px solid var(--line);}
+  .hero__label{display:block;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:.1em;}
+  .hero__date{display:block;margin:4px 0;font-size:22px;letter-spacing:-.03em;font-weight:600;}
+  .hero__year{font-size:12px;color:var(--ink-soft);}
+  .stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+  .stat{padding:20px 22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);}
+  .stat__label{font-size:12px;color:var(--ink-soft);}
+  .stat__value{display:block;font-size:29px;font-weight:600;letter-spacing:-.04em;margin:6px 0 2px;line-height:1.25;}
+  .stat__detail{font-size:11px;color:var(--ink-soft);}
+  .stat:first-child{background:var(--steel);border-color:var(--steel);color:#fff;}
+  .stat:first-child .stat__label,.stat:first-child .stat__detail{color:#d4e9e8;}
+  .gantt{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .section-heading{padding:22px 24px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);}
+  h2{font-size:17px;letter-spacing:-.025em;margin:0;font-weight:600;}
+  .section-heading p,.panel-caption{font-size:12px;color:var(--ink-soft);margin:4px 0 0;}
+  .count-badge{background:var(--steel-soft);color:var(--steel);border-radius:20px;padding:4px 10px;font-size:11px;white-space:nowrap;}
+  .timeline-heading{padding:18px 24px 0;}
+  .axis{position:relative;height:25px;margin-bottom:12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);}
+  .axis__tick{position:absolute;bottom:7px;white-space:nowrap;}
+  .gantt-legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--ink-soft);padding-bottom:14px;}
+  .pc-swatch{display:inline-block;width:9px;height:9px;margin-right:5px;vertical-align:middle;border-radius:2px;}
   .pc-swatch--on{background:var(--actual);}
-  .pc-swatch--overdue{background:#fff;border:1.5px solid var(--stamp-red);}
-  .pc-swatch--open{background:#F0F1F3;border:1px solid var(--line);}
-  .row-grid{margin-top:8px;}
-  .grid-cells{display:flex;flex-wrap:wrap;gap:3px;}
-  .cell{
-    -webkit-appearance:none;appearance:none;
-    width:13px;height:13px;
-    border-radius:2px;
-    background:#F0F1F3;
-    border:1px solid var(--line);
-    padding:0;
-    cursor:pointer;
-  }
+  .pc-swatch--overdue{background:#fff5f1;border:1px solid var(--stamp-red);}
+  .pc-swatch--open{background:#eef3f5;border:1px solid #9bafb9;}
+  .row{padding:22px 24px;border-top:1px solid var(--line);}
+  .row__label{display:flex;align-items:flex-start;gap:12px;}
+  .row__num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--steel);background:var(--steel-soft);border-radius:6px;min-width:30px;height:28px;display:grid;place-items:center;flex:0 0 auto;}
+  .row__name{font-weight:600;font-size:15px;line-height:1.5;padding-top:2px;min-width:0;}
+  .row__meta{margin:4px 0 13px 42px;font-size:11px;color:var(--ink-soft);}
+  .row__req{display:inline-block;margin-left:8px;font-size:10px;color:var(--steel);background:var(--steel-soft);padding:2px 7px;border-radius:4px;}
+  .track{position:relative;height:7px;border-radius:4px;background-color:#eef3f5;background-image:linear-gradient(to right,transparent 0%,transparent 19.23%,var(--weekend) 19.23%,var(--weekend) 26.92%,transparent 26.92%,transparent 46.15%,var(--weekend) 46.15%,var(--weekend) 53.85%,transparent 53.85%,transparent 73.08%,var(--weekend) 73.08%,var(--weekend) 80.77%,transparent 80.77%,transparent 100%);}
+  .bar{position:absolute;top:0;bottom:0;background:var(--steel);border-radius:4px;}
+  .row-grid{margin-top:14px;}
+  .grid-cells{display:flex;flex-wrap:wrap;gap:4px;}
+  .cell{appearance:none;width:24px;height:24px;border-radius:4px;background:#eef3f5;border:1px solid #9bafb9;padding:0;cursor:pointer;}
   .cell.on{background:var(--actual);border-color:var(--actual);}
-  .cell.overdue{background:#fff;border-color:var(--stamp-red);border-width:1.5px;}
-  .row-grid__status{
-    margin-top:5px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    color:var(--ink-soft);
+  .cell.on::after{content:'✓';font-size:13px;color:white;}
+  .cell.overdue{background:#fff5f1;border-color:#ba7565;}
+  .cell:hover{box-shadow:0 0 0 2px var(--steel-soft);border-color:var(--steel);}
+  .row-grid__status{margin-top:6px;font-size:11px;color:var(--ink-soft);}
+  .units{margin-top:12px;}
+  .units summary,.unit-sub summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;min-height:32px;padding:5px 0;color:var(--steel);font-size:12px;font-weight:500;}
+  summary::-webkit-details-marker{display:none;}
+  .units summary::before{content:'';width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);flex:0 0 auto;margin:0 3px;}
+  details[open]>summary::before{transform:rotate(45deg);}
+  .unit-sub{margin-top:8px;padding:8px 12px;background:#f7f9fa;border:1px solid var(--line);border-radius:8px;}
+  .unit-sub summary{font-size:12px;color:var(--ink);}
+  .units__list{list-style:none;margin:4px 0 0;padding:0;}
+  .units__list li{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:8px 14px;padding:12px 0;border-top:1px solid var(--line);font-size:12px;}
+  .units__check{display:flex;align-items:flex-start;gap:9px;cursor:pointer;flex:1 1 210px;min-width:0;}
+  .units__check input{margin:1px 0 0;width:18px;height:18px;accent-color:var(--steel);flex:0 0 auto;cursor:pointer;}
+  .units__topic-text{min-width:0;overflow-wrap:anywhere;}
+  li:has(.topic-done:checked) .units__topic-text{color:var(--ink-soft);text-decoration:line-through;}
+  .units__time-group{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+  .units__time{font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+  .topic-actual{width:80px;background:#fff;border:1px solid #b9c9d1;border-radius:5px;padding:7px 8px;font-size:11px;color:var(--ink);}
+  .topic-actual::placeholder{color:var(--ink-soft);}
+  .pending{display:flex;flex-direction:column;gap:20px;min-width:0;}
+  .side-panel{padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;}
+  .progress-value{font-size:36px;line-height:1.2;font-weight:600;letter-spacing:-.05em;margin-top:20px;}
+  progress{display:block;width:100%;height:8px;appearance:none;border:none;border-radius:6px;overflow:hidden;background:#e7eff1;margin:14px 0 10px;accent-color:var(--steel);}
+  progress::-webkit-progress-bar{background:#e7eff1;}
+  progress::-webkit-progress-value{background:var(--steel);border-radius:6px;}
+  progress::-moz-progress-bar{background:var(--steel);}
+  .progress-caption{font-size:12px;color:var(--ink-soft);margin:0;}
+  .pending__title{font-size:15px;margin:0;font-weight:600;}
+  .chip{padding:16px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.6;}
+  .chip:last-child{border-bottom:0;padding-bottom:0;}
+  .chip__num{color:var(--steel);font-family:'JetBrains Mono',monospace;font-size:10px;margin-right:6px;}
+  .chip__status{display:block;width:fit-content;font-size:10px;color:#805b1d;background:#faf2df;border-radius:4px;padding:2px 7px;margin:7px 0 0 21px;}
+  .help-panel{background:#e8f1f1;border-color:#d4e4e4;}
+  .help-panel p{font-size:12px;color:#46636c;margin:10px 0 0;line-height:1.8;}
+  .foot{grid-column:1/-1;padding:4px 0;color:var(--ink-soft);font-size:11px;}
+  .foot-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .save-status{display:block;min-height:17px;font-size:11px;}
+  .save-btn,.reset-btn{appearance:none;min-height:40px;padding:8px 14px;border-radius:6px;font-size:12px;cursor:pointer;}
+  .save-btn{border:1px solid var(--steel);background:var(--steel);color:#fff;}
+  .save-btn:hover{background:#10565b;}
+  .reset-btn{border:1px solid var(--line);background:white;color:var(--stamp-red);}
+  .reset-btn:hover{background:#fff5f1;}
+  @media(min-width:1100px){.pending{position:sticky;top:24px;}}
+  @media(max-width:1099px){
+    .wrap{padding:0 24px 28px;}
+    .manifest{grid-template-columns:minmax(0,1fr);gap:20px;}
+    .pending{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+    .help-panel{grid-column:1/-1;}
   }
-  .gantt{padding:16px 18px 4px;}
-  .axis{
-    position:relative;
-    height:20px;
-    margin-bottom:8px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    color:var(--ink-soft);
-    border-bottom:1px solid var(--line);
+  @media(max-width:600px){
+    .wrap{padding:0 16px 24px;}
+    .app-bar{min-height:70px;}.app-bar__tag{display:none;}
+    .head{display:block;padding-top:24px;}
+    .hero{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;border:0;padding:0;margin-top:18px;}
+    .hero__date{font-size:17px;margin:0;}.hero__label{font-size:10px;}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .stat{padding:15px;}.stat__value{font-size:25px;}
+    .section-heading{padding:18px 16px;}.timeline-heading{padding:16px 16px 0;}
+    .row{padding:18px 16px;}.row__name{font-size:14px;}.row__meta{margin-left:0;margin-top:8px;}
+    .pending{grid-template-columns:minmax(0,1fr);}.help-panel{grid-column:auto;}
+    .units__time-group{margin-left:27px;}.unit-sub{padding:8px;}
+    .foot-actions{align-items:flex-start;}.axis{font-size:9px;}
   }
-  .axis__tick{position:absolute;bottom:5px;white-space:nowrap;}
-  .row{padding:11px 0;border-bottom:1px solid var(--line);}
-  .row:last-child{border-bottom:none;}
-  .row__label{display:flex;align-items:baseline;gap:7px;}
-  .row__num{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    color:var(--steel);
-    font-weight:500;
-    flex:0 0 auto;
-  }
-  .row__name{font-weight:600;font-size:13.5px;color:var(--ink);min-width:0;}
-  .row__meta{margin-top:3px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);}
-  .row__req{
-    display:inline-block;
-    margin-left:6px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:9.5px;
-    color:var(--steel);
-    background:var(--steel-soft);
-    padding:1px 6px;
-    border-radius:3px;
-    letter-spacing:.03em;
-  }
-  .units{margin-top:8px;}
-  .units summary{
-    list-style:none;
-    cursor:pointer;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    color:var(--steel);
-    letter-spacing:.03em;
-    display:flex;
-    align-items:center;
-    gap:7px;
-    padding:2px 0;
-  }
-  .units summary::-webkit-details-marker{display:none;}
-  .units summary::before{
-    content:'';
-    width:0;height:0;
-    border-top:4px solid transparent;
-    border-bottom:4px solid transparent;
-    border-left:5px solid var(--steel);
-    transition:transform .15s ease;
-    flex:0 0 auto;
-  }
-  .units[open] summary::before{transform:rotate(90deg);}
-  .unit-sub{margin:4px 0 4px 2px;padding-left:11px;border-left:2px solid var(--steel-soft);}
-  .unit-sub summary{
-    list-style:none;
-    cursor:pointer;
-    font-family:'Inter',sans-serif;
-    font-weight:600;
-    font-size:11.5px;
-    color:var(--ink);
-    display:flex;
-    align-items:center;
-    gap:6px;
-    padding:4px 0;
-  }
-  .unit-sub summary::-webkit-details-marker{display:none;}
-  .unit-sub summary::before{
-    content:'';
-    width:0;height:0;
-    border-top:3.5px solid transparent;
-    border-bottom:3.5px solid transparent;
-    border-left:4px solid var(--ink-soft);
-    transition:transform .15s ease;
-    flex:0 0 auto;
-  }
-  .unit-sub[open] summary::before{transform:rotate(90deg);}
-  .units__list{list-style:decimal;margin:8px 0 2px 18px;padding:0;display:flex;flex-direction:column;gap:8px;}
-  .unit-sub .units__list{margin:2px 0 6px 14px;}
-  .units__list li{
-    font-size:12px;
-    color:var(--ink);
-    line-height:1.35;
-    padding:3px 0;
-    display:flex;
-    flex-wrap:wrap;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:4px 10px;
-  }
-  .units__check{display:flex;align-items:flex-start;gap:7px;cursor:pointer;flex:1 1 150px;min-width:0;}
-  .units__check input[type="checkbox"]{
-    margin-top:2px;
-    width:15px;height:15px;
-    accent-color:var(--steel);
-    flex:0 0 auto;
-    cursor:pointer;
-  }
-  .units__topic-text{min-width:0;}
-  li:has(.topic-done:checked) .units__topic-text{opacity:.5;text-decoration:line-through;}
-  .units__time-group{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
-  .units__time{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);white-space:nowrap;}
-  .topic-actual{
-    width:58px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    color:var(--ink);
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:3px;
-    padding:3px 5px;
-  }
-  .topic-actual::placeholder{color:#B7BEC9;}
-  .topic-actual:focus{outline:none;border-color:var(--steel);}
-  .track{
-    position:relative;
-    height:14px;
-    margin-top:7px;
-    border-radius:3px;
-    background-color:#F5F6F8;
-    background-image:linear-gradient(to right,
-      transparent 0%, transparent 19.23%,
-      var(--weekend) 19.23%, var(--weekend) 26.92%,
-      transparent 26.92%, transparent 46.15%,
-      var(--weekend) 46.15%, var(--weekend) 53.85%,
-      transparent 53.85%, transparent 73.08%,
-      var(--weekend) 73.08%, var(--weekend) 80.77%,
-      transparent 80.77%, transparent 100%);
-  }
-  .bar{position:absolute;top:0;bottom:0;background:var(--steel);border-radius:3px;}
-  .today{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--amber);}
-  .today__flag{
-    position:absolute;
-    top:-18px;left:0;
-    background:var(--amber);
-    color:#241a00;
-    font-family:'JetBrains Mono',monospace;
-    font-size:9px;
-    font-weight:600;
-    letter-spacing:.06em;
-    padding:2px 5px;
-    border-radius:3px 3px 3px 0;
-    text-transform:uppercase;
-    white-space:nowrap;
-  }
-  @media (prefers-reduced-motion: no-preference){ .today{animation:pulse 2.4s ease-in-out infinite;} }
-  @keyframes pulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(226,166,59,.55);}
-    50%{box-shadow:0 0 7px 1px rgba(226,166,59,.4);}
-  }
-  .pending{padding:16px 18px 18px;border-top:1.5px dashed var(--line);}
-  .pending__title{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:10px;
-  }
-  .chip{
-    display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;align-items:baseline;
-    border:1.5px dashed var(--line);
-    border-radius:4px;
-    padding:8px 10px;
-    margin-bottom:6px;
-    font-size:12.5px;
-  }
-  .chip:last-child{margin-bottom:0;}
-  .chip__num{font-family:'JetBrains Mono',monospace;color:var(--steel);font-size:11px;margin-right:6px;}
-  .chip__status{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    color:var(--stamp-red);
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    white-space:nowrap;
-  }
-  .foot{
-    padding:14px 18px 16px;
-    background:#F7F8FA;
-    border-top:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    color:var(--ink-soft);
-    line-height:1.7;
-  }
-  .foot b{color:var(--ink);}
-  .foot-hint{margin-top:8px;}
-  .foot-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap;}
-  .save-status{font-size:10px;color:var(--ink-soft);min-height:14px;}
-  .save-btn{
-    -webkit-appearance:none;appearance:none;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    color:var(--steel);
-    background:none;
-    border:1px solid var(--steel);
-    border-radius:4px;
-    padding:5px 10px;
-    cursor:pointer;
-    letter-spacing:.04em;
-  }
-  .save-btn:active{background:var(--steel);color:#fff;}
-  .reset-btn{
-    -webkit-appearance:none;appearance:none;
-    font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
-    color:var(--stamp-red);
-    background:none;
-    border:1px solid var(--stamp-red);
-    border-radius:4px;
-    padding:5px 10px;
-    cursor:pointer;
-    letter-spacing:.04em;
-  }
-  .reset-btn:active{background:var(--stamp-red);color:#fff;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="manifest">
+  <header class="app-bar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">LR</span>Learning workspace</div>
+    <span class="app-bar__tag">SAP S/4HANA · Retail enablement</span>
+  </header>
+  <main class="manifest">
 
     <div class="head">
-      <div class="eyebrow">Training Manifest · SAP S/4HANA Retail</div>
-      <div class="hero">
-        <span class="hero__label">Deliver&nbsp;by</span>
-        <span class="hero__date">Fri, Sep 4</span>
-        <span class="stamp">Route Plan</span>
+      <div>
+        <div class="eyebrow">Your learning plan</div>
+        <h1>SAP S/4HANA Retail</h1>
+        <div class="meta-line" id="meta-line">5 courses · Started August 10, 2026</div>
       </div>
-      <div class="meta-line" id="meta-line">5 courses · 3 live sessions pending · started Aug 10, 2026</div>
+      <div class="hero">
+        <span class="hero__label">Target completion</span>
+        <span class="hero__date">Fri, September 4</span>
+        <span class="hero__year">2026 · Learning plan deadline</span>
+      </div>
     </div>
 
-    <div class="gantt">
+    <section class="stats" aria-label="Learning overview">
+      <div class="stat"><span class="stat__label">Lessons completed</span><strong class="stat__value" id="stat-lessons">0</strong><span class="stat__detail" id="stat-total">Loading lessons</span></div>
+      <div class="stat"><span class="stat__label">Time logged</span><strong class="stat__value" id="stat-time">0m</strong><span class="stat__detail">47h planned course time</span></div>
+      <div class="stat"><span class="stat__label">Learning path</span><strong class="stat__value">5 courses</strong><span class="stat__detail">Includes hands-on practice</span></div>
+      <div class="stat"><span class="stat__label">Live sessions</span><strong class="stat__value">3 pending</strong><span class="stat__detail">Awaiting confirmed dates</span></div>
+    </section>
+
+    <section class="gantt" aria-labelledby="courses-title">
+      <div class="section-heading"><div><h2 id="courses-title">Your courses</h2><p>Follow your schedule. Track every lesson.</p></div><span class="count-badge">Aug 10 – Sep 4</span></div>
+      <div class="timeline-heading">
       <div class="axis">
         <span class="axis__tick" style="left:0%;">Aug 10</span>
         <span class="axis__tick" style="left:19.23%;transform:translateX(-50%);">Aug 14</span>
@@ -353,6 +176,8 @@
         <span><i class="pc-swatch pc-swatch--on"></i>Done</span>
         <span><i class="pc-swatch pc-swatch--overdue"></i>Overdue</span>
         <span><i class="pc-swatch pc-swatch--open"></i>Not yet</span>
+      </div>
+
       </div>
 
       <div class="row">
@@ -461,8 +286,8 @@
       </div>
 
       <div class="row">
-        <div class="row__label"><span class="row__num">03</span><span class="row__name">Practice system (hands-on)PAID SUBSCRIPTION</span></div>
-        <div class="row__meta">S4IRT sandbox · ~4h est. · Aug 24</div>
+        <div class="row__label"><span class="row__num">03</span><span class="row__name">Practice system (hands-on)</span></div>
+        <div class="row__meta">S4IRT sandbox · ~4h est. · Aug 24<span class="row__req">Paid subscription</span></div>
         <div class="track"><div class="bar" style="left:53.85%;width:3.85%;"></div></div>
       </div>
 
@@ -622,33 +447,44 @@
           </details>
         </details>
       </div>
-    </div>
+    </section>
 
-    <div class="pending">
-      <div class="pending__title">Awaiting schedule — live sessions</div>
-      <div class="chip"><span><span class="chip__num">06</span>2026 APAC Partner Enablement</span><span class="chip__status">TBC</span></div>
-      <div class="chip"><span><span class="chip__num">07</span>SAP Business AI in Retail (Partner)</span><span class="chip__status">TBC</span></div>
-      <div class="chip"><span><span class="chip__num">08</span>Cloud ERP Retail Implementation</span><span class="chip__status">TBC</span></div>
-    </div>
+    <aside class="pending" aria-label="Plan details">
+      <section class="side-panel">
+        <h2>Overall progress</h2>
+        <div class="progress-value" id="progress-percent">0%</div>
+        <progress id="overall-progress" value="0" max="100" aria-label="Lessons completed"></progress>
+        <p class="progress-caption" id="progress-caption">Your learning journey starts here.</p>
+      </section>
+      <section class="side-panel">
 
-    <div class="foot">
-      <div><b></b><b></b><b></b> <b>*</b> <b></b><b></b> </div>
+      <h2 class="pending__title">Upcoming live sessions</h2><p class="panel-caption">Dates to be confirmed</p>
+      <div class="chip"><span><span class="chip__num">06</span>2026 APAC Partner Enablement</span><span class="chip__status">Awaiting schedule</span></div>
+      <div class="chip"><span><span class="chip__num">07</span>SAP Business AI in Retail (Partner)</span><span class="chip__status">Awaiting schedule</span></div>
+      <div class="chip"><span><span class="chip__num">08</span>Cloud ERP Retail Implementation</span><span class="chip__status">Awaiting schedule</span></div>
+      </section>
+      <section class="side-panel help-panel">
+        <h2>Make progress, one lesson at a time.</h2>
+        <p>Select a lesson square to mark it complete, or expand unit topics for the full checklist.</p>
+        <p>Record your actual time beside each topic, for example <b>20m</b> or <b>1h 15m</b>.</p>
+      </section>
+    </aside>
+
+    <footer class="foot">
       <div class="foot-actions">
-        <span id="save-status" class="save-status"></span>
+        <div>Progress saves automatically in this browser.<span id="save-status" class="save-status" role="status" aria-live="polite"></span></div>
         <span style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" id="save-btn" class="save-btn">Save now</button>
           <button type="button" id="reset-btn" class="reset-btn">Reset progress</button>
         </span>
       </div>
-    </div>
-
-  </div>
+    </footer>
+  </main>
 </div>
 
 <script>
 (function(){
   var STORAGE_KEY = 'sap-retail-progress-v2';
-  var PLANNED_TOTAL_MIN = 2820; // 47h across courses 01,02,04,05 (course-level badges) — still used for the "logged" stat above
   var PLAN_START = (function(){ var d = new Date(2026,7,10); d.setHours(0,0,0,0); return d; })();
   // Scheduled working-day range per course, matching the Gantt bars above
   var COURSE_SCHEDULE = { "1":[0,1], "2":[1,12], "4":[15,18], "5":[21,25] };
@@ -695,6 +531,7 @@
         btn.className = 'cell';
         btn.setAttribute('data-topic', lesson.key);
         btn.title = lesson.name;
+        btn.setAttribute('aria-label', lesson.name);
         btn.addEventListener('click', function(){
           toggleDone(lesson.key, !(state[lesson.key] && state[lesson.key].done));
         });
@@ -713,6 +550,7 @@
         var key = btn.getAttribute('data-topic');
         var isDone = !!(state[key] && state[key].done);
         var isOverdue = !isDone && DUE_DAY[key] !== undefined && DUE_DAY[key] <= today;
+        btn.setAttribute('aria-pressed', String(isDone));
         btn.classList.toggle('on', isDone);
         btn.classList.toggle('overdue', isOverdue);
         if(isDone) done++;
@@ -801,9 +639,16 @@
 
     var metaEl = document.getElementById('meta-line');
     if(metaEl){
-      metaEl.textContent = doneCount+'/'+total+' lessons done \u00b7 '+fmtMinutes(loggedMin)+' logged of '+fmtMinutes(PLANNED_TOTAL_MIN)+' planned \u00b7 started Aug 10, 2026';
+      metaEl.textContent = '5 courses · Started August 10, 2026';
     }
 
+    document.getElementById('stat-lessons').textContent = doneCount;
+    document.getElementById('stat-total').textContent = 'of ' + total + ' lessons completed';
+    document.getElementById('stat-time').textContent = fmtMinutes(loggedMin);
+    var percent = total ? Math.round(doneCount / total * 100) : 0;
+    document.getElementById('progress-percent').textContent = percent + '%';
+    document.getElementById('overall-progress').value = percent;
+    document.getElementById('progress-caption').textContent = doneCount + ' of ' + total + ' lessons complete';
     renderGrids();
   }
 
@@ -848,6 +693,7 @@
         });
       }
       if(ai){
+        ai.setAttribute('aria-label', 'Actual time for ' + li.querySelector('.units__topic-text').textContent);
         ai.addEventListener('change', function(){
           state[key] = state[key] || {};
           state[key].actual = ai.value.trim();
