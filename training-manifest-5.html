@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training Manifest — SAP S/4HANA Retail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ECEEF2;
+    --panel:#FFFFFF;
+    --ink:#1A2333;
+    --ink-soft:#5B667A;
+    --steel:#3F6B7A;
+    --steel-soft:#DCE6E8;
+    --amber:#E2A63B;
+    --stamp-red:#B4432F;
+    --actual:#2F7D5E;
+    --weekend: rgba(26,35,51,0.07);
+    --line: rgba(26,35,51,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:22px 12px 44px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  .manifest{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(26,35,51,0.08);
+  }
+  .head{padding:20px 18px 16px;border-bottom:1.5px dashed var(--line);}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  .hero{display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .hero__label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+  .hero__date{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:38px;
+    line-height:1;
+    color:var(--ink);
+  }
+  .stamp{
+    margin-left:auto;
+    border:2px solid var(--stamp-red);
+    color:var(--stamp-red);
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:4px 8px;
+    border-radius:3px;
+    transform:rotate(-4deg);
+    white-space:nowrap;
+  }
+  .meta-line{
+    margin-top:9px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+  .gantt-legend{display:flex;gap:14px;margin-bottom:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink-soft);align-items:center;flex-wrap:wrap;}
+  .pc-swatch{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:middle;border-radius:2px;}
+  .pc-swatch--on{background:var(--actual);}
+  .pc-swatch--overdue{background:#fff;border:1.5px solid var(--stamp-red);}
+  .pc-swatch--open{background:#F0F1F3;border:1px solid var(--line);}
+  .row-grid{margin-top:8px;}
+  .grid-cells{display:flex;flex-wrap:wrap;gap:3px;}
+  .cell{
+    -webkit-appearance:none;appearance:none;
+    width:13px;height:13px;
+    border-radius:2px;
+    background:#F0F1F3;
+    border:1px solid var(--line);
+    padding:0;
+    cursor:pointer;
+  }
+  .cell.on{background:var(--actual);border-color:var(--actual);}
+  .cell.overdue{background:#fff;border-color:var(--stamp-red);border-width:1.5px;}
+  .row-grid__status{
+    margin-top:5px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+  }
+  .gantt{padding:16px 18px 4px;}
+  .axis{
+    position:relative;
+    height:20px;
+    margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    border-bottom:1px solid var(--line);
+  }
+  .axis__tick{position:absolute;bottom:5px;white-space:nowrap;}
+  .row{padding:11px 0;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .row__label{display:flex;align-items:baseline;gap:7px;}
+  .row__num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--steel);
+    font-weight:500;
+    flex:0 0 auto;
+  }
+  .row__name{font-weight:600;font-size:13.5px;color:var(--ink);min-width:0;}
+  .row__meta{margin-top:3px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);}
+  .row__req{
+    display:inline-block;
+    margin-left:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--steel);
+    background:var(--steel-soft);
+    padding:1px 6px;
+    border-radius:3px;
+    letter-spacing:.03em;
+  }
+  .units{margin-top:8px;}
+  .units summary{
+    list-style:none;
+    cursor:pointer;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--steel);
+    letter-spacing:.03em;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:2px 0;
+  }
+  .units summary::-webkit-details-marker{display:none;}
+  .units summary::before{
+    content:'';
+    width:0;height:0;
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
+    border-left:5px solid var(--steel);
+    transition:transform .15s ease;
+    flex:0 0 auto;
+  }
+  .units[open] summary::before{transform:rotate(90deg);}
+  .unit-sub{margin:4px 0 4px 2px;padding-left:11px;border-left:2px solid var(--steel-soft);}
+  .unit-sub summary{
+    list-style:none;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:11.5px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 0;
+  }
+  .unit-sub summary::-webkit-details-marker{display:none;}
+  .unit-sub summary::before{
+    content:'';
+    width:0;height:0;
+    border-top:3.5px solid transparent;
+    border-bottom:3.5px solid transparent;
+    border-left:4px solid var(--ink-soft);
+    transition:transform .15s ease;
+    flex:0 0 auto;
+  }
+  .unit-sub[open] summary::before{transform:rotate(90deg);}
+  .units__list{list-style:decimal;margin:8px 0 2px 18px;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .unit-sub .units__list{margin:2px 0 6px 14px;}
+  .units__list li{
+    font-size:12px;
+    color:var(--ink);
+    line-height:1.35;
+    padding:3px 0;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:4px 10px;
+  }
+  .units__check{display:flex;align-items:flex-start;gap:7px;cursor:pointer;flex:1 1 150px;min-width:0;}
+  .units__check input[type="checkbox"]{
+    margin-top:2px;
+    width:15px;height:15px;
+    accent-color:var(--steel);
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .units__topic-text{min-width:0;}
+  li:has(.topic-done:checked) .units__topic-text{opacity:.5;text-decoration:line-through;}
+  .units__time-group{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
+  .units__time{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);white-space:nowrap;}
+  .topic-actual{
+    width:58px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:3px 5px;
+  }
+  .topic-actual::placeholder{color:#B7BEC9;}
+  .topic-actual:focus{outline:none;border-color:var(--steel);}
+  .track{
+    position:relative;
+    height:14px;
+    margin-top:7px;
+    border-radius:3px;
+    background-color:#F5F6F8;
+    background-image:linear-gradient(to right,
+      transparent 0%, transparent 19.23%,
+      var(--weekend) 19.23%, var(--weekend) 26.92%,
+      transparent 26.92%, transparent 46.15%,
+      var(--weekend) 46.15%, var(--weekend) 53.85%,
+      transparent 53.85%, transparent 73.08%,
+      var(--weekend) 73.08%, var(--weekend) 80.77%,
+      transparent 80.77%, transparent 100%);
+  }
+  .bar{position:absolute;top:0;bottom:0;background:var(--steel);border-radius:3px;}
+  .today{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--amber);}
+  .today__flag{
+    position:absolute;
+    top:-18px;left:0;
+    background:var(--amber);
+    color:#241a00;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    font-weight:600;
+    letter-spacing:.06em;
+    padding:2px 5px;
+    border-radius:3px 3px 3px 0;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  @media (prefers-reduced-motion: no-preference){ .today{animation:pulse 2.4s ease-in-out infinite;} }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(226,166,59,.55);}
+    50%{box-shadow:0 0 7px 1px rgba(226,166,59,.4);}
+  }
+  .pending{padding:16px 18px 18px;border-top:1.5px dashed var(--line);}
+  .pending__title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .chip{
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;align-items:baseline;
+    border:1.5px dashed var(--line);
+    border-radius:4px;
+    padding:8px 10px;
+    margin-bottom:6px;
+    font-size:12.5px;
+  }
+  .chip:last-child{margin-bottom:0;}
+  .chip__num{font-family:'JetBrains Mono',monospace;color:var(--steel);font-size:11px;margin-right:6px;}
+  .chip__status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--stamp-red);
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    white-space:nowrap;
+  }
+  .foot{
+    padding:14px 18px 16px;
+    background:#F7F8FA;
+    border-top:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    line-height:1.7;
+  }
+  .foot b{color:var(--ink);}
+  .foot-hint{margin-top:8px;}
+  .foot-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .save-status{font-size:10px;color:var(--ink-soft);min-height:14px;}
+  .save-btn{
+    -webkit-appearance:none;appearance:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--steel);
+    background:none;
+    border:1px solid var(--steel);
+    border-radius:4px;
+    padding:5px 10px;
+    cursor:pointer;
+    letter-spacing:.04em;
+  }
+  .save-btn:active{background:var(--steel);color:#fff;}
+  .reset-btn{
+    -webkit-appearance:none;appearance:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--stamp-red);
+    background:none;
+    border:1px solid var(--stamp-red);
+    border-radius:4px;
+    padding:5px 10px;
+    cursor:pointer;
+    letter-spacing:.04em;
+  }
+  .reset-btn:active{background:var(--stamp-red);color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="manifest">
+
+    <div class="head">
+      <div class="eyebrow">Training Manifest · SAP S/4HANA Retail</div>
+      <div class="hero">
+        <span class="hero__label">Deliver&nbsp;by</span>
+        <span class="hero__date">Fri, Sep 4</span>
+        <span class="stamp">Route Plan</span>
+      </div>
+      <div class="meta-line" id="meta-line">5 courses · 3 live sessions pending · started Aug 10, 2026</div>
+    </div>
+
+    <div class="gantt">
+      <div class="axis">
+        <span class="axis__tick" style="left:0%;">Aug 10</span>
+        <span class="axis__tick" style="left:19.23%;transform:translateX(-50%);">Aug 14</span>
+        <span class="axis__tick" style="left:46.15%;transform:translateX(-50%);">Aug 21</span>
+        <span class="axis__tick" style="left:73.08%;transform:translateX(-50%);">Aug 28</span>
+        <span class="axis__tick" style="left:100%;transform:translateX(-100%);">Sep 4</span>
+      </div>
+      <div class="gantt-legend">
+        <span><i class="pc-swatch pc-swatch--on"></i>Done</span>
+        <span><i class="pc-swatch pc-swatch--overdue"></i>Overdue</span>
+        <span><i class="pc-swatch pc-swatch--open"></i>Not yet</span>
+      </div>
+
+      <div class="row">
+        <div class="row__label"><span class="row__num">01</span><span class="row__name">Introducing the Retail Industry</span></div>
+        <div class="row__meta">2 units · 2h 13m · Aug 10</div>
+        <div class="track">
+          
+          <div class="bar" style="left:0%;width:3.85%;"></div>
+        </div>
+        <div class="row-grid">
+          <div class="grid-cells" id="grid-cells-1"></div>
+          <div class="row-grid__status" id="grid-status-1"></div>
+        </div>
+        <details class="units">
+          <summary data-label="Unit topics">Unit topics (7)</summary>
+
+          <details class="unit-sub">
+            <summary data-label="1. Getting to Know the Retail Industry · 1h 8m">1. Getting to Know the Retail Industry · 1h 8m</summary>
+            <ol class="units__list">
+              <li data-topic="1-1-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Defining the Essentials of the Retail Industry</span></label><span class="units__time-group"><span class="units__time">22m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="1-1-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Analyzing the Retail Industry Trends and Their Impacts</span></label><span class="units__time-group"><span class="units__time">22m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="1-1-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Examining the Retail Industry Value Chain</span></label><span class="units__time-group"><span class="units__time">12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="1-1-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Identifying the Retail Industry Differentiating Business Processes</span></label><span class="units__time-group"><span class="units__time">12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="2. Explaining the Key Capabilities of the SAP Solutions for the Retail Industry Across its Value Chain · 1h 5m">2. Explaining the Key Capabilities of the SAP Solutions for the Retail Industry Across its Value Chain · 1h 5m</summary>
+            <ol class="units__list">
+              <li data-topic="1-2-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Explaining How SAP Creates Value for the Retail Industry</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="1-2-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Identifying Key Capabilities of SAP Solutions for the Retail Industry</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="1-2-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Maximizing Value for the Retail Industry with SAP Business AI</span></label><span class="units__time-group"><span class="units__time">25m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+        </details>
+      </div>
+
+      <div class="row">
+        <div class="row__label"><span class="row__num">02</span><span class="row__name">Discovering Retail Functions &amp; Processes</span></div>
+        <div class="row__meta">6 units · 25h · Aug 11–21</div>
+        <div class="track"><div class="bar" style="left:3.85%;width:42.31%;"></div></div>
+        <div class="row-grid">
+          <div class="grid-cells" id="grid-cells-2"></div>
+          <div class="row-grid__status" id="grid-status-2"></div>
+        </div>
+        <details class="units">
+          <summary data-label="Unit topics">Unit topics (21)</summary>
+
+          <details class="unit-sub">
+            <summary data-label="1. Introducing SAP Retail Portfolio · 42m">1. Introducing SAP Retail Portfolio · 42m</summary>
+            <ol class="units__list">
+              <li data-topic="2-1-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Providing the Solution and Process Overview</span></label><span class="units__time-group"><span class="units__time">42m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="2. Getting to Know the Basic Concepts · 1h 27m">2. Getting to Know the Basic Concepts · 1h 27m</summary>
+            <ol class="units__list">
+              <li data-topic="2-2-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Identifying the Organizational Structures</span></label><span class="units__time-group"><span class="units__time">10m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-2-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Exploring the Business Partner, Retail Sites, and Article Groupings</span></label><span class="units__time-group"><span class="units__time">17m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-2-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Introducing the Retail Article Master</span></label><span class="units__time-group"><span class="units__time">30m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-2-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Introducing Assortment Management</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-2-5"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Retail Pricing</span></label><span class="units__time-group"><span class="units__time">10m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="3. Performing Requirements Planning from Supplier to Distribution Center · 1h 29m">3. Performing Requirements Planning from Supplier to Distribution Center · 1h 29m</summary>
+            <ol class="units__list">
+              <li data-topic="2-3-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Requirements Planning</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-3-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Setting Up Purchase Order Management</span></label><span class="units__time-group"><span class="units__time">22m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-3-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Maintaining Order Confirmation and Goods Receipt Process in a Distribution Center</span></label><span class="units__time-group"><span class="units__time">27m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-3-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Logistics Invoice Verification</span></label><span class="units__time-group"><span class="units__time">10m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-3-5"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Condition Contract Settlement</span></label><span class="units__time-group"><span class="units__time">10m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="4. Generating Replenishment Planning for Stores · 1h 59m">4. Generating Replenishment Planning for Stores · 1h 59m</summary>
+            <ol class="units__list">
+              <li data-topic="2-4-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Explaining Store Connection with Point-of-Sale Sales</span></label><span class="units__time-group"><span class="units__time">35m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-4-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Running Replenishment Planning</span></label><span class="units__time-group"><span class="units__time">45m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-4-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing the Goods Issue Process in a Distribution Center</span></label><span class="units__time-group"><span class="units__time">24m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-4-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Posting Goods Receipt in a Store</span></label><span class="units__time-group"><span class="units__time">15m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="5. Executing Store Operations · 1h 26m">5. Executing Store Operations · 1h 26m</summary>
+            <ol class="units__list">
+              <li data-topic="2-5-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Managing Retail Store Operations</span></label><span class="units__time-group"><span class="units__time">34m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-5-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Selling to Customers - Sales Order</span></label><span class="units__time-group"><span class="units__time">42m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-5-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Physical Inventory</span></label><span class="units__time-group"><span class="units__time">10m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="6. Showing Retail Promotion with Merchandise Distribution · 1h 18m">6. Showing Retail Promotion with Merchandise Distribution · 1h 18m</summary>
+            <ol class="units__list">
+              <li data-topic="2-6-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Promotion Planning and Subsequent Processing</span></label><span class="units__time-group"><span class="units__time">26m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-6-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Merchandise Distribution</span></label><span class="units__time-group"><span class="units__time">32m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="2-6-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Generating a Collective Purchase Order</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+        </details>
+      </div>
+
+      <div class="row">
+        <div class="row__label"><span class="row__num">03</span><span class="row__name">Practice system (hands-on)PAID SUBSCRIPTION</span></div>
+        <div class="row__meta">S4IRT sandbox · ~4h est. · Aug 24</div>
+        <div class="track"><div class="bar" style="left:53.85%;width:3.85%;"></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row__label"><span class="row__num">04</span><span class="row__name">Exploring Cloud Public Edition – Retail</span></div>
+        <div class="row__meta">6 units · 7h 22m · Aug 25–27</div>
+        <div class="track"><div class="bar" style="left:57.69%;width:11.54%;"></div></div>
+        <div class="row-grid">
+          <div class="grid-cells" id="grid-cells-4"></div>
+          <div class="row-grid__status" id="grid-status-4"></div>
+        </div>
+        <details class="units">
+          <summary data-label="Unit topics">Unit topics (25)</summary>
+
+          <details class="unit-sub">
+            <summary data-label="1. Introducing SAP S/4HANA Cloud for Retail, Fashion, and Vertical Business · 28m">1. Introducing SAP S/4HANA Cloud for Retail, Fashion, and Vertical Business · 28m</summary>
+            <ol class="units__list">
+              <li data-topic="4-1-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Providing a Solution Overview</span></label><span class="units__time-group"><span class="units__time">26m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-1-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Accessing Course Simulations</span></label><span class="units__time-group"><span class="units__time">2m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="2. Introducing Basic Concepts (3I3, 5FJ, 3I1, 3I5, 3I4) · 1h 2m">2. Introducing Basic Concepts (3I3, 5FJ, 3I1, 3I5, 3I4) · 1h 2m</summary>
+            <ol class="units__list">
+              <li data-topic="4-2-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Maintaining Sites for Retail (3I3)</span></label><span class="units__time-group"><span class="units__time">13m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-2-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Explaining Product Taxonomies for Retail (5FJ)</span></label><span class="units__time-group"><span class="units__time">12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-2-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Creating Products for Retail (3I1)</span></label><span class="units__time-group"><span class="units__time">13m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-2-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Managing Assortments (3I5)</span></label><span class="units__time-group"><span class="units__time">12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-2-5"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Sales Pricing for Retail (3I4)</span></label><span class="units__time-group"><span class="units__time">12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="3. Performing Requirements Planning (3I8, 5FM, 5FU, 5FN) · 1h 18m">3. Performing Requirements Planning (3I8, 5FM, 5FU, 5FN) · 1h 18m</summary>
+            <ol class="units__list">
+              <li data-topic="4-3-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Replenishment Planning for Distribution Centers (3I8)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-3-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Ordering Merchandise with Procurement for Retail (5FM)</span></label><span class="units__time-group"><span class="units__time">28m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-3-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Processing Inbound Logistics for Distribution Centers (5FU)</span></label><span class="units__time-group"><span class="units__time">17m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-3-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Maintaining Invoice Verification for Retail (5FN)</span></label><span class="units__time-group"><span class="units__time">13m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="4. Managing Store Operations (5FY, 5FW, 3HQ, 5FZ, 3HR, 3HU) · 2h">4. Managing Store Operations (5FY, 5FW, 3HQ, 5FZ, 3HR, 3HU) · 2h</summary>
+            <ol class="units__list">
+              <li data-topic="4-4-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing In-Store Purchase Order Management (5FY)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-4-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing My Store Management (5FW)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-4-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing In-Store Merchandise Management (3HQ)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-4-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Omnichannel Order Fulfillment for Retail (5FZ)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-4-5"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing In-Store Inventory Management (3HR)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-4-6"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing In-Store Customer Order Management (3HU)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="5. Executing Store Replenishment (3I2, 3HV, 3I7, 5FV, 5FX) · 1h 40m">5. Executing Store Replenishment (3I2, 3HV, 3I7, 5FV, 5FX) · 1h 40m</summary>
+            <ol class="units__list">
+              <li data-topic="4-5-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Setting up the Store Connectivity - Outbound (3I2)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-5-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Setting up the Store Connectivity - Inbound (3HV)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-5-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Replenishment Planning for Stores (3I7)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-5-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Processing Outbound Logistics for Distribution Centers (5FV)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-5-5"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Executing Store Ordering from Distribution Center (5FX)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="6. Performing Retail Promotion with Merchandise Distribution (637, 5FL, 71O) · 54m">6. Performing Retail Promotion with Merchandise Distribution (637, 5FL, 71O) · 54m</summary>
+            <ol class="units__list">
+              <li data-topic="4-6-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Planning a Retail Promotions (637)</span></label><span class="units__time-group"><span class="units__time">20m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-6-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Performing Merchandise Allocation (5FL)</span></label><span class="units__time-group"><span class="units__time">15m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="4-6-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Processing Merchandise Distribution &amp; Collective PO (71O)</span></label><span class="units__time-group"><span class="units__time">19m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+        </details>
+      </div>
+
+      <div class="row">
+        <div class="row__label"><span class="row__num">05</span><span class="row__name">Configuring Master Data – Private Edition</span></div>
+        <div class="row__meta">9 units · 12h 25m · Aug 31–Sep 3<span class="row__req">requires 02</span></div>
+        <div class="track"><div class="bar" style="left:80.77%;width:15.38%;"></div></div>
+        <div class="row-grid">
+          <div class="grid-cells" id="grid-cells-5"></div>
+          <div class="row-grid__status" id="grid-status-5"></div>
+        </div>
+        <details class="units">
+          <summary data-label="Unit topics">Unit topics (16)</summary>
+
+          <details class="unit-sub">
+            <summary data-label="1. Organizational Structures in Retail · 43m">1. Organizational Structures in Retail · 43m</summary>
+            <ol class="units__list">
+              <li data-topic="5-1-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Organizational Structures in Retail</span></label><span class="units__time-group"><span class="units__time">43m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="2. Business Partners · 30m">2. Business Partners · 30m</summary>
+            <ol class="units__list">
+              <li data-topic="5-2-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Business Partners</span></label><span class="units__time-group"><span class="units__time">30m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="3. Sites · 44m">3. Sites · 44m</summary>
+            <ol class="units__list">
+              <li data-topic="5-3-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Sites - Configuring and Maintenance</span></label><span class="units__time-group"><span class="units__time">44m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="4. Article Groupings · 1h 23m">4. Article Groupings · 1h 23m</summary>
+            <ol class="units__list">
+              <li data-topic="5-4-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Classification and Merchandise Categories</span></label><span class="units__time-group"><span class="units__time">42m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-4-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Article Hierarchy</span></label><span class="units__time-group"><span class="units__time">41m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="5. Assortment Management · 2h 21m">5. Assortment Management · 2h 21m</summary>
+            <ol class="units__list">
+              <li data-topic="5-5-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Assortment</span></label><span class="units__time-group"><span class="units__time">1h 12m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-5-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Listing Procedures</span></label><span class="units__time-group"><span class="units__time">24m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-5-3"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Layout</span></label><span class="units__time-group"><span class="units__time">21m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-5-4"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Assortment List</span></label><span class="units__time-group"><span class="units__time">24m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="6. Single Articles · 1h 46m">6. Single Articles · 1h 46m</summary>
+            <ol class="units__list">
+              <li data-topic="5-6-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Retail Article Master — Create a Single Article</span></label><span class="units__time-group"><span class="units__time">1h 3m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-6-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Configuring the Article Master</span></label><span class="units__time-group"><span class="units__time">43m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="7. Integrating SAP SuccessFactors Learning with SAP SuccessFactors HCM * · 1h">7. Integrating SAP SuccessFactors Learning with SAP SuccessFactors HCM * · 1h</summary>
+            <ol class="units__list">
+              <li data-topic="5-7-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Configuring the Integration between SAP SuccessFactors HCM and SAP SuccessFactors Learning</span></label><span class="units__time-group"><span class="units__time">21m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-7-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Setting Up User Accounts and Permissions</span></label><span class="units__time-group"><span class="units__time">39m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="8. Generic Articles and Variants · 1h 26m">8. Generic Articles and Variants · 1h 26m</summary>
+            <ol class="units__list">
+              <li data-topic="5-8-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Characteristics</span></label><span class="units__time-group"><span class="units__time">32m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+              <li data-topic="5-8-2"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Creating a Generic Article</span></label><span class="units__time-group"><span class="units__time">54m</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+
+          <details class="unit-sub">
+            <summary data-label="9. Structured Articles · 1h">9. Structured Articles · 1h</summary>
+            <ol class="units__list">
+              <li data-topic="5-9-1"><label class="units__check"><input type="checkbox" class="topic-done"><span class="units__topic-text">Structured Articles</span></label><span class="units__time-group"><span class="units__time">1h</span><input type="text" class="topic-actual" placeholder="e.g. 20m" maxlength="12" autocomplete="off"></span></li>
+            </ol>
+          </details>
+        </details>
+      </div>
+    </div>
+
+    <div class="pending">
+      <div class="pending__title">Awaiting schedule — live sessions</div>
+      <div class="chip"><span><span class="chip__num">06</span>2026 APAC Partner Enablement</span><span class="chip__status">TBC</span></div>
+      <div class="chip"><span><span class="chip__num">07</span>SAP Business AI in Retail (Partner)</span><span class="chip__status">TBC</span></div>
+      <div class="chip"><span><span class="chip__num">08</span>Cloud ERP Retail Implementation</span><span class="chip__status">TBC</span></div>
+    </div>
+
+    <div class="foot">
+      <div><b></b><b></b><b></b> <b>*</b> <b></b><b></b> </div>
+      <div class="foot-actions">
+        <span id="save-status" class="save-status"></span>
+        <span style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" id="save-btn" class="save-btn">Save now</button>
+          <button type="button" id="reset-btn" class="reset-btn">Reset progress</button>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'sap-retail-progress-v2';
+  var PLANNED_TOTAL_MIN = 2820; // 47h across courses 01,02,04,05 (course-level badges) — still used for the "logged" stat above
+  var PLAN_START = (function(){ var d = new Date(2026,7,10); d.setHours(0,0,0,0); return d; })();
+  // Scheduled working-day range per course, matching the Gantt bars above
+  var COURSE_SCHEDULE = { "1":[0,1], "2":[1,12], "4":[15,18], "5":[21,25] };
+  var COURSE_TOTAL = {};
+  var DUE_DAY = {};
+  var state = {};
+
+  function startOfDay(d){ var x = new Date(d.getTime()); x.setHours(0,0,0,0); return x; }
+  function dayOffset(d){ return Math.round((startOfDay(d) - PLAN_START) / 86400000); }
+
+  function toggleDone(key, isDone){
+    state[key] = state[key] || {};
+    state[key].done = isDone;
+    if(isDone){
+      if(typeof state[key].doneAt !== 'number'){ state[key].doneAt = dayOffset(new Date()); }
+    } else {
+      delete state[key].doneAt;
+    }
+    save();
+    render();
+  }
+
+  function buildLessonGrid(){
+    var courses = {};
+    allTopicLis().forEach(function(li){
+      var key = li.getAttribute('data-topic');
+      var courseNum = key.split('-')[0];
+      var nameEl = li.querySelector('.units__topic-text');
+      (courses[courseNum] = courses[courseNum] || []).push({ key: key, name: nameEl ? nameEl.textContent : key });
+    });
+    Object.keys(COURSE_SCHEDULE).forEach(function(courseNum){
+      var host = document.getElementById('grid-cells-' + courseNum);
+      if(!host) return;
+      host.innerHTML = '';
+      var lessons = courses[courseNum] || [];
+      var sched = COURSE_SCHEDULE[courseNum];
+      var start = sched[0], end = sched[1];
+      var n = lessons.length;
+      COURSE_TOTAL[courseNum] = n;
+      lessons.forEach(function(lesson, i){
+        DUE_DAY[lesson.key] = n > 0 ? (start + ((i+1)/n) * (end-start)) : start;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cell';
+        btn.setAttribute('data-topic', lesson.key);
+        btn.title = lesson.name;
+        btn.addEventListener('click', function(){
+          toggleDone(lesson.key, !(state[lesson.key] && state[lesson.key].done));
+        });
+        host.appendChild(btn);
+      });
+    });
+  }
+
+  function renderGrids(){
+    var today = dayOffset(new Date());
+    Object.keys(COURSE_SCHEDULE).forEach(function(courseNum){
+      var host = document.getElementById('grid-cells-' + courseNum);
+      if(!host) return;
+      var done = 0, overdue = 0;
+      host.querySelectorAll('.cell').forEach(function(btn){
+        var key = btn.getAttribute('data-topic');
+        var isDone = !!(state[key] && state[key].done);
+        var isOverdue = !isDone && DUE_DAY[key] !== undefined && DUE_DAY[key] <= today;
+        btn.classList.toggle('on', isDone);
+        btn.classList.toggle('overdue', isOverdue);
+        if(isDone) done++;
+        if(isOverdue) overdue++;
+      });
+      var statusEl = document.getElementById('grid-status-' + courseNum);
+      if(statusEl){
+        var total = COURSE_TOTAL[courseNum] || 0;
+        var overdueText = overdue > 0 ? (', ' + overdue + ' overdue') : '';
+        statusEl.textContent = done + '/' + total + ' lessons done' + overdueText;
+      }
+    });
+  }
+
+  function parseMinutes(str){
+    if(!str) return 0;
+    str = String(str).trim().toLowerCase();
+    if(!str) return 0;
+    var h = 0, m = 0, matched = false;
+    var hM = str.match(/(\d+(?:\.\d+)?)\s*h/);
+    var mM = str.match(/(\d+(?:\.\d+)?)\s*m/);
+    if(hM){ h = parseFloat(hM[1]); matched = true; }
+    if(mM){ m = parseFloat(mM[1]); matched = true; }
+    if(!matched){
+      var bare = parseFloat(str);
+      if(!isNaN(bare)){ m = bare; matched = true; }
+    }
+    return matched ? Math.round(h*60+m) : 0;
+  }
+
+  function fmtMinutes(total){
+    total = Math.round(total);
+    var h = Math.floor(total/60), m = total%60;
+    if(h && m) return h+'h '+m+'m';
+    if(h) return h+'h';
+    return m+'m';
+  }
+
+  function allTopicLis(){ return document.querySelectorAll('li[data-topic]'); }
+
+  function render(){
+    var doneCount = 0, total = 0, loggedMin = 0;
+
+    // Populate every lesson checkbox/input from state
+    allTopicLis().forEach(function(li){
+      var key = li.getAttribute('data-topic');
+      var s = state[key] || {};
+      var cb = li.querySelector('.topic-done');
+      var ai = li.querySelector('.topic-actual');
+      if(cb) cb.checked = !!s.done;
+      if(ai) ai.value = s.actual || '';
+      loggedMin += parseMinutes(s.actual);
+    });
+
+    // Roll up per-unit (unit-sub) counts
+    document.querySelectorAll('.unit-sub').forEach(function(sub){
+      var lis = sub.querySelectorAll('li[data-topic]');
+      var subDone = 0;
+      lis.forEach(function(li){
+        var key = li.getAttribute('data-topic');
+        if((state[key]||{}).done) subDone++;
+      });
+      var summary = sub.querySelector(':scope > summary');
+      if(summary){
+        var label = summary.getAttribute('data-label') || '';
+        summary.textContent = label + ' \u00b7 ' + subDone + '/' + lis.length + ' done';
+      }
+    });
+
+    // Roll up per-course (units) counts — includes all nested lessons regardless of unit-sub nesting
+    document.querySelectorAll('.units').forEach(function(block){
+      var lis = block.querySelectorAll('li[data-topic]');
+      var blockDone = 0;
+      lis.forEach(function(li){
+        var key = li.getAttribute('data-topic');
+        if((state[key]||{}).done) blockDone++;
+      });
+      total += lis.length;
+      doneCount += blockDone;
+      var summary = block.querySelector(':scope > summary');
+      if(summary){
+        var label = summary.getAttribute('data-label') || 'Unit topics';
+        summary.textContent = label + ' \u00b7 ' + blockDone + '/' + lis.length + ' done';
+      }
+    });
+
+    var metaEl = document.getElementById('meta-line');
+    if(metaEl){
+      metaEl.textContent = doneCount+'/'+total+' lessons done \u00b7 '+fmtMinutes(loggedMin)+' logged of '+fmtMinutes(PLANNED_TOTAL_MIN)+' planned \u00b7 started Aug 10, 2026';
+    }
+
+    renderGrids();
+  }
+
+  function setStatus(text, isError){
+    var el = document.getElementById('save-status');
+    if(!el) return;
+    el.textContent = text;
+    el.style.color = isError ? 'var(--stamp-red)' : 'var(--ink-soft)';
+  }
+
+  function save(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      setStatus('saved \u2713');
+    }catch(e){
+      setStatus('save failed: ' + (e && e.message ? e.message : e), true);
+    }
+  }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ state = JSON.parse(raw) || {}; }
+    }catch(e){
+      state = {};
+    }
+    var today = dayOffset(new Date());
+    Object.keys(state).forEach(function(key){
+      var s = state[key];
+      if(s && s.done && typeof s.doneAt !== 'number'){ s.doneAt = today; }
+    });
+  }
+
+  function attachHandlers(){
+    allTopicLis().forEach(function(li){
+      var key = li.getAttribute('data-topic');
+      var cb = li.querySelector('.topic-done');
+      var ai = li.querySelector('.topic-actual');
+      if(cb){
+        cb.addEventListener('change', function(){
+          toggleDone(key, cb.checked);
+        });
+      }
+      if(ai){
+        ai.addEventListener('change', function(){
+          state[key] = state[key] || {};
+          state[key].actual = ai.value.trim();
+          save();
+          render();
+        });
+      }
+    });
+    var saveBtn = document.getElementById('save-btn');
+    if(saveBtn){
+      saveBtn.addEventListener('click', function(){ save(); });
+    }
+    var resetBtn = document.getElementById('reset-btn');
+    if(resetBtn){
+      resetBtn.addEventListener('click', function(){
+        if(!confirm('Clear all logged progress and times? This can\'t be undone.')) return;
+        state = {};
+        try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+        render();
+        setStatus('cleared');
+      });
+    }
+  }
+
+  function init(){
+    load();
+    buildLessonGrid();
+    attachHandlers();
+    render();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
